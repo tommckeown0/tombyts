@@ -1,0 +1,43 @@
+# Dependency directories
+node_modules/
+
+# TypeScript compiled output
+dist/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Operating System generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-workspace
+
+# Optional: Database files
+# Depending on your setup, you might want to exclude database files that are often
+# used in development.
+*.sqlite
+*.db
+
+# Optional: build directories
+# If your project has build scripts that output additional files, you might want to
+# exclude those directories.
+/build/
+/out/
