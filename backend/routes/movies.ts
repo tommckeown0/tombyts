@@ -38,4 +38,24 @@ router.post("/", async (req: Request, res: Response) => {
     }
 });
 
+// GET movie by title
+router.get("/:title", async (req, res) => {
+    try {
+        // Decode the title to handle spaces and special characters
+        const title = decodeURIComponent(req.params.title);
+
+        // Find the movie by title
+        const movie = await Movie.findOne({ title: title });
+
+        if (movie) {
+            res.json(movie);
+        } else {
+            res.status(404).send("Movie not found");
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server error");
+    }
+});
+
 export default router;
