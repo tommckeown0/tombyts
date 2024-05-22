@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 
 const Home: React.FC = () => {
-    const { userId, logout } = useContext(UserContext);
+    const { userId, username, logout } = useContext(UserContext);
 
     return (
         <div>
@@ -12,6 +12,7 @@ const Home: React.FC = () => {
             {userId ? (
                 <>
                     <p>Your User ID: {userId}</p>
+                    <p>Your username: {username}</p>
                     <button onClick={logout}>Logout</button>
                 </>
             ) : (

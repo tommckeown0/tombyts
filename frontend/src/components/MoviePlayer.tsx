@@ -9,7 +9,7 @@ const MoviePlayer = () => {
         title: string;
         path: string;
     } | null>(null);
-    const { userId } = React.useContext(UserContext);
+    const { userId, username } = React.useContext(UserContext);
 
     useEffect(() => {
         axios
@@ -26,6 +26,7 @@ const MoviePlayer = () => {
     return (
         <div style={{ position: "relative" }}>
             {userId && <span>Welcome, {userId}!</span>} {/* Home button */}
+            <p>Your username: {username}</p>
             <div style={{ position: "relative", top: "10px", left: "10px" }}>
                 <Link
                     to="/"

@@ -8,7 +8,7 @@ const MoviesList: React.FC = () => {
     const [movies, setMovies] = useState<Movie[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const { userId } = React.useContext(UserContext);
+    const { userId, username } = React.useContext(UserContext);
 
     useEffect(() => {
         const fetchMovies = async () => {
@@ -35,6 +35,7 @@ const MoviesList: React.FC = () => {
         <div>
             {userId && <span>Welcome, {userId}!</span>}{" "}
             {/* Display the user if logged in */}
+            <p>Your username: {username}</p>
             <div style={{ position: "relative", top: "10px", left: "10px" }}>
                 <Link
                     to="/"
