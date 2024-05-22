@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
+import { UserContext } from "../context/UserContext";
 
 const MoviePlayer = () => {
     const { title = "Default Title" } = useParams(); // This gets the movie id from the URL
@@ -8,6 +9,7 @@ const MoviePlayer = () => {
         title: string;
         path: string;
     } | null>(null);
+    const { userId } = React.useContext(UserContext);
 
     useEffect(() => {
         axios
@@ -23,8 +25,8 @@ const MoviePlayer = () => {
 
     return (
         <div style={{ position: "relative" }}>
-            {/* Home button */}
-            <div style={{ position: "absolute", top: "10px", left: "10px" }}>
+            {userId && <span>Welcome, {userId}!</span>} {/* Home button */}
+            <div style={{ position: "relative", top: "10px", left: "10px" }}>
                 <Link
                     to="/"
                     style={{
