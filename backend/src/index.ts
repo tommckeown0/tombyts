@@ -5,9 +5,8 @@ import userRoutes from "../routes/users";
 import loginRoutes from "../routes/auth";
 import progressRoutes from "../routes/progress";
 import dotenv from "dotenv";
+import cors from "cors";
 dotenv.config();
-
-const cors = require("cors");
 
 const app = express();
 const PORT = process.env.PORT || 3001;

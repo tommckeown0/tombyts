@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const ProtectedRoute = () => {
     const token = localStorage.getItem("token");
