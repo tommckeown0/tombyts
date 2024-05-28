@@ -3,6 +3,7 @@ import connectDB from "../config/database";
 import movieRoutes from "../routes/movies";
 import userRoutes from "../routes/users";
 import loginRoutes from "../routes/auth";
+import progressRoutes from "../routes/progress";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -23,11 +24,13 @@ app.use(
     "/media",
     express.static("C:\\Users\\tommc\\OneDrive\\Documents\\Torrents")
 );
-app.use("/auth", loginRoutes);
+app.use("/progress", progressRoutes);
 
 app.get("/", (req, res) => {
     res.send("Hello from TypeScript and Express!");
 });
+
+app.use("/auth", loginRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

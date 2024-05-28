@@ -4,6 +4,11 @@ import User, { IUser } from "../models/user";
 
 const router = express.Router();
 
+// Test user route
+router.get("/", async (req: Request, res: Response) => {
+    res.send("User route");
+});
+
 // Create a new user
 router.post("/", async (req: Request, res: Response) => {
     const saltRounds = 10;
