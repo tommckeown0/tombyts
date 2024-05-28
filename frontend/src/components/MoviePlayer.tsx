@@ -26,30 +26,46 @@ const MoviePlayer: React.FC = () => {
                 setMovie({ ...movieResponse.data, path: moviePath });
 
                 if (userId) {
-                    const progressResponse = await axios.get(
-                        `http://localhost:3001/progress/${movieResponse.data.title}`,
-                        {
-                            headers: {
-                                Authorization: `Bearer ${localStorage.getItem(
-                                    "token"
-                                )}`,
-                            },
-                        }
-                    );
-                    if (
-                        progressResponse.status === 200 &&
-                        progressResponse.data
-                    ) {
-                        setProgress(progressResponse.data.progress);
-                    }
+                    // Wait for movie data to be set before fetching progress
+                    fetchProgress(movieResponse.data.title);
                 }
             } catch (error) {
                 console.error("Error fetching movie or progress:", error);
             }
         };
 
+        const fetchProgress = async (movieTitle: string) => {
+            try {
+                const response = await axios.get(
+                    `http://localhost:3001/progress/${movieTitle}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem(
+                                "token"
+                            )}`,
+                        },
+                    }
+                );
+                if (response.status === 200 && response.data) {
+                    const newProgress = response.data.progress;
+                    setProgress(newProgress);
+
+                    // Set video currentTime *only if* the video is ready
+                    if (videoRef.current && videoRef.current.readyState > 0) {
+                        videoRef.current.currentTime =
+                            (newProgress / 100) * videoRef.current.duration;
+                    }
+                } else {
+                    setProgress(0);
+                }
+            } catch (error) {
+                console.error("Error fetching progress", error);
+                setProgress(0);
+            }
+        };
+
         fetchMovieData();
-    }, [title, userId]); // Include title and userId as dependencies
+    }, [title, userId]);
 
     useEffect(() => {
         const handleProgress = async () => {
