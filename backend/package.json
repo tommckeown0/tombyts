@@ -4,6 +4,7 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
+        "scan": "ts-node scripts/scanMovies.ts",
         "build": "tsc",
         "start": "node dist/src/index.js",
         "build-start": "npm run build && npm start",
@@ -23,6 +24,7 @@
         "eslint": "^8.57.0",
         "globals": "^15.3.0",
         "jsonwebtoken": "^9.0.2",
+        "ts-node": "^10.9.2",
         "ts-node-dev": "^2.0.0",
         "typescript": "^5.4.5",
         "typescript-eslint": "^7.11.0"
