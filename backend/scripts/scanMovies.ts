@@ -5,7 +5,7 @@ import Movie from "../models/movie";
 import mongoose from "mongoose";
 
 const supportedExtensions = [".mp4", ".mkv", ".avi"]; // Add more if needed
-const torrentsDir = "C:\\Users\\tommc\\OneDrive\\Documents\\Torrents";
+const torrentsDir = "C:\\Users\\tommc\\Documents\\Torrents";
 
 type ScanMoviesFunction = (directoryPath?: string) => Promise<void>;
 
