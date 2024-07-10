@@ -14,7 +14,7 @@ const MoviesList: React.FC = () => {
         const fetchMovies = async () => {
             try {
                 const { data } = await axios.get(
-                    "http://localhost:3001/movies"
+                    "https://localhost:3001/movies"
                 ); // Adjust the URL/port as necessary
                 setMovies(data);
                 setLoading(false);

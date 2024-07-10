@@ -20,9 +20,9 @@ const MoviePlayer: React.FC = () => {
         const fetchMovieData = async () => {
             try {
                 const movieResponse = await axios.get(
-                    `http://localhost:3001/movies/${encodeURIComponent(title)}`
+                    `https://localhost:3001/movies/${encodeURIComponent(title)}`
                 );
-                const moviePath = `http://localhost:3001/media/${movieResponse.data.path}`;
+                const moviePath = `https://localhost:3001/media/${movieResponse.data.path}`;
                 setMovie({ ...movieResponse.data, path: moviePath });
 
                 if (userId) {
@@ -37,7 +37,7 @@ const MoviePlayer: React.FC = () => {
         const fetchProgress = async (movieTitle: string) => {
             try {
                 const response = await axios.get(
-                    `http://localhost:3001/progress/${movieTitle}`,
+                    `https://localhost:3001/progress/${movieTitle}`,
                     {
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem(
@@ -75,7 +75,7 @@ const MoviePlayer: React.FC = () => {
                     100;
                 try {
                     await axios.post(
-                        `http://localhost:3001/progress/${movie?.title}`,
+                        `https://localhost:3001/progress/${movie?.title}`,
                         { progress: newProgress },
                         {
                             headers: {

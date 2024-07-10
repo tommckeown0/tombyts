@@ -6,6 +6,8 @@ import loginRoutes from "../routes/auth";
 import progressRoutes from "../routes/progress";
 import dotenv from "dotenv";
 import cors from "cors";
+import https from "https";
+import fs from "fs";
 dotenv.config();
 
 const app = express();
@@ -28,6 +30,15 @@ app.get("/", (req, res) => {
 
 app.use("/auth", loginRoutes);
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+const options = {
+    key: fs.readFileSync("C:\\Users\\tommc\\Documents\\certs\\key.pem"),
+    cert: fs.readFileSync("C:\\Users\\tommc\\Documents\\certs\\cert.pem"),
+};
+
+https.createServer(options, app).listen(PORT, () => {
+    console.log(`Server running on https://localhost:${PORT}`);
 });
+
+// app.listen(PORT, () => {
+//     console.log(`Server running on http://localhost:${PORT}`);
+// });
