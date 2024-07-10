@@ -1,6 +1,7 @@
 package com.tombyts.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -22,6 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.tombyts.ui.theme.TombytsTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.lifecycle.lifecycleScope
+import com.tombyts.ui.ApiService
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +38,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             TombytsTheme {
                 val snackbarHostState = remember { SnackbarHostState() }
-                Scaffold(modifier = Modifier.fillMaxSize(),
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
                     snackbarHost = { SnackbarHost(snackbarHostState) }) { innerPadding ->
                     Column( // Use Column within Scaffold content
                         modifier = Modifier
@@ -41,6 +50,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         Greeting(name = "Tom")
                         SimpleButton(snackbarHostState)
+                        SimpleButton2(snackbarHostState)
                     }
                 }
             }
@@ -68,12 +78,13 @@ fun GreetingPreview() {
 @Composable
 fun SimpleButton(snackbarHostState: SnackbarHostState) {
     var showSnackbar by remember { mutableStateOf(false) }
-    Button(onClick = {showSnackbar = true
+    Button(onClick = {
+        showSnackbar = true
     }) {
         Text("Click me")
     }
 
-    if (showSnackbar){
+    if (showSnackbar) {
         LaunchedEffect(Unit) {
             val result = snackbarHostState.showSnackbar(
                 message = "Hello, world!",
@@ -83,10 +94,56 @@ fun SimpleButton(snackbarHostState: SnackbarHostState) {
                 SnackbarResult.ActionPerformed -> {
                     // Action was performed, do something
                 }
+
                 SnackbarResult.Dismissed -> {
                     showSnackbar = false// Action was dismissed, do something
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SimpleButton2(snackbarHostState: SnackbarHostState) {
+    var apiResponse by remember { mutableStateOf("") }
+    var showSnackbar by remember { mutableStateOf(false) }
+
+    val retrofit = Retrofit.Builder()
+        .baseUrl("http://localhost:3001/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val apiService = retrofit.create(ApiService::class.java)
+
+    Button(onClick = {
+        CoroutineScope(Dispatchers.Main).launch { // Use CoroutineScope directly
+            try {
+                val response = apiService.getResponse()
+                if (response.isSuccessful) {
+                    apiResponse = response.body() ?: "No response body"
+                    showSnackbar = true
+                } else {
+                    apiResponse = "API Error: ${response.code()}"
+                    showSnackbar = true
+                }
+            } catch (e: Exception) {
+                apiResponse = "API Exception: ${e.message}"
+                showSnackbar = true
+                Log.e("API Error", e.message, e)
+            }
+        }
+    }) {
+        Text("API call")
+    }
+
+    if (showSnackbar) {
+        LaunchedEffect(apiResponse) { // Trigger when apiResponse changes
+            val result = snackbarHostState.showSnackbar(
+                message = apiResponse,
+                duration = SnackbarDuration.Short
+            )
+            // ... handle Snackbar result if needed
         }
     }
 }
