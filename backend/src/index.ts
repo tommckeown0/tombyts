@@ -25,7 +25,7 @@ app.use("/media", express.static("C:\\Users\\tommc\\Documents\\Torrents"));
 app.use("/progress", progressRoutes);
 
 app.get("/", (req, res) => {
-    res.send("Hello from TypeScript and Express!");
+    res.json("Hello from TypeScript and Express!");
 });
 
 app.use("/auth", loginRoutes);
