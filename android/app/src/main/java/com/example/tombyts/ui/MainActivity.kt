@@ -29,6 +29,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.CoroutineScope
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,7 +81,9 @@ fun SimpleButton(snackbarHostState: SnackbarHostState) {
     var showSnackbar by remember { mutableStateOf(false) }
     Button(
         onClick = { showSnackbar = true },
-        modifier = Modifier.testTag("simpleButton")
+        modifier = Modifier
+            .testTag("simpleButton")
+            .semantics { contentDescription = "Simple Button" },
     ) {
         Text("Click me")
     }
