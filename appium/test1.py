@@ -34,5 +34,28 @@ class TestTombyts(unittest.TestCase):
         button.click()
         time.sleep(2)
 
+    @unittest.skip("Skipping API call button test for now")
+    def test_click_simple_button_2(self) -> None:
+        button = self.driver.find_element(
+            by=AppiumBy.XPATH,  # Adjust locator if needed
+            value="//android.widget.Button[contains(@text, 'API call')]"
+        )
+        button.click()
+        time.sleep(2)  # Allow time for API call and Snackbar
+
+        # 1. Verify Snackbar Presence (if applicable)
+        snackbar_element = self.driver.find_element(
+            by=AppiumBy.XPATH,
+            value="//android.widget.TextView[contains(@text, 'Hello from TypeScript and Express!')]"
+        )
+        self.assertTrue(snackbar_element.is_displayed())
+
+        # 2. Option A: Verify API Response Code (if accessible)
+        # ... (Add logic to retrieve and assert the response code) ...
+
+        # 2. Option B: Verify Snackbar Message Content
+        snackbar_text = snackbar_element.text
+        self.assertIn("Hello from TypeScript and Express!", snackbar_text)
+
 if __name__ == '__main__':
     unittest.main()

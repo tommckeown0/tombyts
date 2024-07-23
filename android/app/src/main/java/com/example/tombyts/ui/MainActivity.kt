@@ -136,6 +136,11 @@ fun SimpleButton2(snackbarHostState: SnackbarHostState) {
                 showSnackbar = true
                 Log.e("API Error", e.message, e)
             }
+
+            val result = snackbarHostState.showSnackbar(
+                message = apiResponse,
+                duration = SnackbarDuration.Short
+            )
         }
     }) {
         Text("API call")
