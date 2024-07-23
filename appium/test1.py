@@ -8,7 +8,7 @@ capabilities = dict(
     automationName='uiautomator2',
     deviceName='Android',
     appPackage='com.example.tombyts',
-    appActivity='.ui.theme.MainActivity.kt',
+    appActivity='.ui.MainActivity',
     language='en',
     locale='US'
 )
@@ -16,14 +16,14 @@ capabilities = dict(
 appium_server_url = 'http://localhost:4723'
 
 class TestTombyts(unittest.TestCase):
-    def setUp(self):
-        self.driver = webdriver.Remote(appium_server_url, capabilities)
+    def setUp(self) -> None:
+        self.driver = webdriver.Remote(appium_server_url, options=UiAutomator2Options().load_capabilities(capabilities))
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         if self.driver:
             self.driver.quit()
 
-    def test_click_button(self):
+    def test_click_button(self) -> None:
         button = self.driver.find_element(by=AppiumBy.XPATH, value="//android.widget.Button[@content-desc='simpleButton']")
         button.click()
 
