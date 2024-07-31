@@ -3,6 +3,7 @@ package com.example.tombyts.ui
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface ApiService {
@@ -11,4 +12,8 @@ interface ApiService {
 
     @POST("/auth/login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
+
+    @GET("/movies")
+    suspend fun getMovies(@Header("Authorization") token: String): Response<List<Movie>>
+
 }

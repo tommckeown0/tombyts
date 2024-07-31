@@ -1,5 +1,6 @@
 package com.example.tombyts.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -23,10 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.tombyts.ui.theme.TombytsTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import kotlinx.coroutines.launch
@@ -38,9 +42,17 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.input.pointer.motionEventSpy
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,53 +61,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             TombytsTheme {
                 val snackbarHostState = remember { SnackbarHostState() }
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    snackbarHost = { SnackbarHost(snackbarHostState) }) { innerPadding ->
-                    Column(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        // Existing content
-                        Greeting(name = "Tom")
-                        SimpleButton(snackbarHostState)
-                        SimpleButton2(snackbarHostState)
-
-                        // Login fields
-                        var username by remember { mutableStateOf("") }
-                        var password by remember { mutableStateOf("") }
-
-                        OutlinedTextField(
-                            value = username,
-                            onValueChange = { username = it },
-                            label = { Text("Username") },
-                            placeholder = { Text("Enter your username") },
-                            modifier = Modifier.padding(8.dp) // Add padding
-                        )
-
-                        var passwordVisible by remember { mutableStateOf(false) }
-                        OutlinedTextField(
-                            value = password,
-                            onValueChange = { password = it },
-                            label = { Text("Password") },
-                            placeholder = { Text("Enter your password") },
-                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                            trailingIcon = {
-                                val image = if (passwordVisible)
-                                    Icons.Filled.Check
-                                else Icons.Filled.CheckCircle
-                                val description =
-                                    if (passwordVisible) "Hide password" else "Show password"
-                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                    Icon(imageVector = image, contentDescription = description)
-                                }
-                            },
-                            modifier = Modifier.padding(8.dp) // Add padding
-                        )
-                        LoginButton(username, password)
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = "login") {
+                    composable("login") {
+                        LoginScreen(navController, snackbarHostState) // Pass snackbarHostState
+                    }
+                    composable(
+                        "movieList/{token}",
+                        arguments = listOf(navArgument("token") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val token = backStackEntry.arguments?.getString("token") ?: ""
+                        MovieListScreen(token)
                     }
                 }
             }
@@ -104,62 +80,109 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello again $name!",
-        modifier = modifier
-    )
-}
+fun LoginScreen(navController: NavController, snackbarHostState: SnackbarHostState) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            var username by remember { mutableStateOf("") }
+            var password by remember { mutableStateOf("") }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TombytsTheme {
-        Greeting("Android")
+            Text("Welcome to Tombyts")
+            OutlinedTextField(
+                value = username,
+                onValueChange = { username = "tom" },
+                label = { Text("Username") },
+                placeholder = { Text("Enter your username") }
+            )
+
+            var passwordVisible by remember { mutableStateOf(false) }
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = "password" },
+                label = { Text("Password") },
+                placeholder = { Text("Enter your password") },
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val image = if (passwordVisible)
+                        Icons.Filled.Check
+                    else Icons.Filled.CheckCircle
+                    // Please provide localized description for accessibility
+                    val description = if (passwordVisible) "Hide password" else "Show password"
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, description)
+                    }
+                }
+            )
+            LoginButton(username, password, navController)
+        }
     }
 }
 
 @Composable
-fun LoginScreen() {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+fun MovieListScreen(token: String) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize()
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "Movieslist")
+            var movies by remember { mutableStateOf<List<Movie>>(emptyList()) }
+            var isLoading by remember { mutableStateOf(true) }
+            var error by remember { mutableStateOf<String?>(null) }
+            val apiService = remember { // Create ApiService instance
+                Retrofit.Builder()
+                    .baseUrl("https://10.0.2.2:3001/") // Replace with your backend URL
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+                    .create(ApiService::class.java)
+            }
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Input fields and buttons will go here
-        OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Username") },
-            placeholder = { Text("Enter your username") }
-        )
-
-        var passwordVisible by remember { mutableStateOf(false) }
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            placeholder = { Text("Enter your password") },
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                val image = if (passwordVisible)
-                    Icons.Filled.Check
-                else Icons.Filled.CheckCircle
-                // Please provide localized description for accessibility
-                val description = if (passwordVisible) "Hide password" else "Show password"
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(imageVector = image, description)
+            LaunchedEffect(Unit) {
+                try {
+                    val response = apiService.getMovies("Bearer $token") // Include token in headers
+                    if (response.isSuccessful) {
+                        movies = response.body() ?: emptyList()
+                    } else {
+                        error = "Failed to fetch movies"
+                        Log.e("API Error", "Failed to fetch movies: ${response.code()}")
+                    }
+                } catch (e: Exception) {
+                    error = "Error: ${e.message}"
+                } finally {
+                    isLoading = false
                 }
             }
-        )
+            if (isLoading) {
+                CircularProgressIndicator()
+            } else if (error != null) {
+                Text("Error: $error")
+            } else {
+                LazyColumn {
+                    items(movies) { movie ->
+                        Text(text = movie.title) // Display movie title
+                    }
+                }
+            }
+        }
     }
+    // ... (Display movies or loading/error state)
 }
 
 @Composable
-fun LoginButton(username: String, password: String) {
+fun LoginButton(username: String, password: String, navController: NavController) {
     var apiResponse by remember { mutableStateOf("") } // State to hold API response
     val coroutineScope = rememberCoroutineScope()
     val apiService = remember { // Create ApiService instance
@@ -169,6 +192,7 @@ fun LoginButton(username: String, password: String) {
             .build()
             .create(ApiService::class.java)
     }
+    val context = LocalContext.current
 
     Button(onClick = {
         coroutineScope.launch {
@@ -176,14 +200,21 @@ fun LoginButton(username: String, password: String) {
                 val loginRequest = LoginRequest(username, password)
                 val response = apiService.login(loginRequest)
                 if (response.isSuccessful) {
-                    apiResponse = response.body()?.message ?: "Login successful"
-                    //Display token in apiResponse
-                    // Handle successful login (e.g., store token, navigate to home screen)
-                    // ...
+                    val loginResponse = response.body()
+                    val token = loginResponse?.token
+                    if (token != null) {
+                        val sharedPreferences =
+                            context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                        val editor = sharedPreferences.edit()
+                        editor.putString("auth_token", token)
+                        editor.apply()
+
+                        navController.navigate("movieList/$token") // Pass token as argument
+                    } else {
+                        apiResponse = "Login failed: Token is null"
+                    }
                 } else {
-                    apiResponse = "Login failed: ${response.code()}"
-                    // Handle login failure (e.g., show error message)
-                    // ...
+                    apiResponse = "Login failed: ${response.code()} ${response.message()}"
                 }
             } catch (e: Exception) {
                 apiResponse = "API Exception: ${e.message}"
