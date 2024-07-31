@@ -1,3 +1,4 @@
 /build
-/src/main/res/raw/cert.pem
-/src/main/res/raw/key.pem
+/src/main/res/raw/pems/cert.pem
+/src/main/res/raw/pems/key.pem
+/src/main/res/raw/cert.cer

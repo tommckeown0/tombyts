@@ -26,6 +26,7 @@ class TestTombyts(unittest.TestCase):
         if self.driver:
             self.driver.quit()
 
+    #@unittest.skip("Skipping click me button test for now")
     def test_click_button(self) -> None:
         button = self.driver.find_element(
             by=AppiumBy.ACCESSIBILITY_ID,
@@ -34,11 +35,20 @@ class TestTombyts(unittest.TestCase):
         button.click()
         time.sleep(2)
 
+        #API button test steps
+        button = self.driver.find_element(
+            by=AppiumBy.ACCESSIBILITY_ID,  # Adjust locator if needed
+            value="API Button"
+        )
+        button.click()
+        time.sleep(2)  # Allow time for API call and Snackbar
+
     @unittest.skip("Skipping API call button test for now")
     def test_click_simple_button_2(self) -> None:
+        time.sleep(5)
         button = self.driver.find_element(
-            by=AppiumBy.XPATH,  # Adjust locator if needed
-            value="//android.widget.Button[contains(@text, 'API call')]"
+            by=AppiumBy.ACCESSIBILITY_ID,  # Adjust locator if needed
+            value="API Button"
         )
         button.click()
         time.sleep(2)  # Allow time for API call and Snackbar

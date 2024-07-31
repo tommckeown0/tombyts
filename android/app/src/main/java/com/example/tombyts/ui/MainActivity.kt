@@ -23,6 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.tombyts.ui.theme.TombytsTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -31,6 +37,10 @@ import kotlinx.coroutines.CoroutineScope
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,16 +52,50 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     snackbarHost = { SnackbarHost(snackbarHostState) }) { innerPadding ->
-                    Column( // Use Column within Scaffold content
+                    Column(
                         modifier = Modifier
                             .padding(innerPadding)
                             .fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        // Existing content
                         Greeting(name = "Tom")
                         SimpleButton(snackbarHostState)
                         SimpleButton2(snackbarHostState)
+
+                        // Login fields
+                        var username by remember { mutableStateOf("") }
+                        var password by remember { mutableStateOf("") }
+
+                        OutlinedTextField(
+                            value = username,
+                            onValueChange = { username = it },
+                            label = { Text("Username") },
+                            placeholder = { Text("Enter your username") },
+                            modifier = Modifier.padding(8.dp) // Add padding
+                        )
+
+                        var passwordVisible by remember { mutableStateOf(false) }
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            label = { Text("Password") },
+                            placeholder = { Text("Enter your password") },
+                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            trailingIcon = {
+                                val image = if (passwordVisible)
+                                    Icons.Filled.Check
+                                else Icons.Filled.CheckCircle
+                                val description =
+                                    if (passwordVisible) "Hide password" else "Show password"
+                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                    Icon(imageVector = image, contentDescription = description)
+                                }
+                            },
+                            modifier = Modifier.padding(8.dp) // Add padding
+                        )
+                        LoginButton(username, password)
                     }
                 }
             }
@@ -73,6 +117,86 @@ fun GreetingPreview() {
     TombytsTheme {
         Greeting("Android")
     }
+}
+
+@Composable
+fun LoginScreen() {
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Input fields and buttons will go here
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text("Username") },
+            placeholder = { Text("Enter your username") }
+        )
+
+        var passwordVisible by remember { mutableStateOf(false) }
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            placeholder = { Text("Enter your password") },
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                val image = if (passwordVisible)
+                    Icons.Filled.Check
+                else Icons.Filled.CheckCircle
+                // Please provide localized description for accessibility
+                val description = if (passwordVisible) "Hide password" else "Show password"
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(imageVector = image, description)
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun LoginButton(username: String, password: String) {
+    var apiResponse by remember { mutableStateOf("") } // State to hold API response
+    val coroutineScope = rememberCoroutineScope()
+    val apiService = remember { // Create ApiService instance
+        Retrofit.Builder()
+            .baseUrl("https://10.0.2.2:3001/") // Replace with your backend URL
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ApiService::class.java)
+    }
+
+    Button(onClick = {
+        coroutineScope.launch {
+            try {
+                val loginRequest = LoginRequest(username, password)
+                val response = apiService.login(loginRequest)
+                if (response.isSuccessful) {
+                    apiResponse = response.body()?.message ?: "Login successful"
+                    //Display token in apiResponse
+                    // Handle successful login (e.g., store token, navigate to home screen)
+                    // ...
+                } else {
+                    apiResponse = "Login failed: ${response.code()}"
+                    // Handle login failure (e.g., show error message)
+                    // ...
+                }
+            } catch (e: Exception) {
+                apiResponse = "API Exception: ${e.message}"
+                // Handle exception
+                // ...
+            }
+        }
+    }) {
+        Text("Login")
+    }
+
+    // Display API response (optional)
+    Text(apiResponse)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -120,29 +244,34 @@ fun SimpleButton2(snackbarHostState: SnackbarHostState) {
 
     val apiService = retrofit.create(ApiService::class.java)
 
-    Button(onClick = {
-        CoroutineScope(Dispatchers.Main).launch { // Use CoroutineScope directly
-            try {
-                val response = apiService.getResponse()
-                if (response.isSuccessful) {
-                    apiResponse = response.body() ?: "No response body"
-                    showSnackbar = true
-                } else {
-                    apiResponse = "API Error: ${response.code()}"
-                    showSnackbar = true
+    Button(
+        onClick = {
+            CoroutineScope(Dispatchers.Main).launch { // Use CoroutineScope directly
+                try {
+                    val response = apiService.getResponse()
+                    if (response.isSuccessful) {
+                        apiResponse = response.body() ?: "No response body"
+                        //showSnackbar = true
+                    } else {
+                        apiResponse = "API Error: ${response.code()}"
+                        //showSnackbar = true
+                    }
+                } catch (e: Exception) {
+                    apiResponse = "API Exception: ${e.message}"
+                    //showSnackbar = true
+                    Log.e("API Error", e.message, e)
                 }
-            } catch (e: Exception) {
-                apiResponse = "API Exception: ${e.message}"
-                showSnackbar = true
-                Log.e("API Error", e.message, e)
-            }
 
-            val result = snackbarHostState.showSnackbar(
-                message = apiResponse,
-                duration = SnackbarDuration.Short
-            )
-        }
-    }) {
+                val result = snackbarHostState.showSnackbar(
+                    message = apiResponse,
+                    duration = SnackbarDuration.Short
+                )
+            }
+        },
+        modifier = Modifier
+            .testTag("simpleButton2")
+            .semantics { contentDescription = "API Button" }
+    ) {
         Text("API call")
     }
 
