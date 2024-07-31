@@ -1,10 +1,11 @@
 import express, { Request, Response } from "express";
 import Movie from "../models/movie";
+import { authenticateUser } from "./auth";
 
 const router = express.Router();
 
 // Get all movies
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", authenticateUser, async (req: Request, res: Response) => {
     try {
         const movies = await Movie.find();
         res.json(movies);
@@ -19,7 +20,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 // Add a new movie
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", authenticateUser, async (req: Request, res: Response) => {
     const movie = new Movie({
         title: req.body.title,
         path: req.body.path,
@@ -39,7 +40,7 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 // GET movie by title
-router.get("/:title", async (req, res) => {
+router.get("/:title", authenticateUser, async (req, res) => {
     try {
         // Decode the title to handle spaces and special characters
         const title = decodeURIComponent(req.params.title);

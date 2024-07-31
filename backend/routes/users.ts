@@ -1,16 +1,17 @@
 import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import User, { IUser } from "../models/user";
+import { authenticateUser } from "./auth";
 
 const router = express.Router();
 
 // Test user route
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", authenticateUser, async (req: Request, res: Response) => {
     res.send("User route");
 });
 
 // Create a new user
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", authenticateUser, async (req: Request, res: Response) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
 

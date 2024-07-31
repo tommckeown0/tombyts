@@ -6,7 +6,7 @@ import Progress from "../models/progress";
 const router = express.Router();
 
 // Test progress route
-router.get("/", (req: Request, res: Response) => {
+router.get("/", authenticateUser, (req: Request, res: Response) => {
     res.send("Progress route");
 });
 
