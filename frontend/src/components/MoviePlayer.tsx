@@ -13,7 +13,7 @@ interface Movie {
 const MoviePlayer: React.FC = () => {
     const { title = "" } = useParams<{ title: string }>(); // Get movie title
     const [movie, setMovie] = useState<Movie | null>(null);
-    const { userId } = useContext(UserContext);
+    const { userId, username } = useContext(UserContext);
     const videoRef = useRef<HTMLVideoElement>(null);
 
     const [progress, setProgress] = useState(0);
@@ -125,14 +125,19 @@ const MoviePlayer: React.FC = () => {
         <Container>
             <Header />
             <Box sx={{ my: 4 }}>
-                {userId && (
-                    <Typography variant="body1">
-                        Your User ID {userId}!{" "}
-                    </Typography>
-                )}
                 <Typography variant="h4" component="h1" gutterBottom>
                     {movie.title}
                 </Typography>
+                {userId && (
+                    <Box>
+                        <Typography variant="body1">
+                            Your User ID {userId}!
+                        </Typography>
+                        <Typography variant="body1">
+                            Your username: {username}
+                        </Typography>
+                    </Box>
+                )}
                 <video
                     width="100%"
                     controls
