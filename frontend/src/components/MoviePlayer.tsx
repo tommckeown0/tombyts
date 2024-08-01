@@ -19,8 +19,16 @@ const MoviePlayer: React.FC = () => {
     useEffect(() => {
         const fetchMovieData = async () => {
             try {
+                const token = localStorage.getItem("token");
                 const movieResponse = await axios.get(
-                    `https://localhost:3001/movies/${encodeURIComponent(title)}`
+                    `https://localhost:3001/movies/${encodeURIComponent(
+                        title
+                    )}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
                 );
                 const moviePath = `https://localhost:3001/media/${movieResponse.data.path}`;
                 setMovie({ ...movieResponse.data, path: moviePath });

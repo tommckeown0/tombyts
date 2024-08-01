@@ -13,8 +13,14 @@ const MoviesList: React.FC = () => {
     useEffect(() => {
         const fetchMovies = async () => {
             try {
+                const token = localStorage.getItem("token");
                 const { data } = await axios.get(
-                    "https://localhost:3001/movies"
+                    "https://localhost:3001/movies",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
                 ); // Adjust the URL/port as necessary
                 setMovies(data);
                 setLoading(false);
