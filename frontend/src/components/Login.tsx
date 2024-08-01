@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import {
+    Container,
+    TextField,
+    Button,
+    Typography,
+    Box,
+    Link,
+} from "@mui/material";
 
 const Login = () => {
     const [username, setUsername] = useState("");
@@ -33,42 +41,50 @@ const Login = () => {
     };
 
     return (
-        <div>
-            <div style={{ position: "relative", top: "10px", left: "10px" }}>
-                <Link
+        <Container maxWidth="sm">
+            <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
+                <Button
+                    component={RouterLink}
                     to="/"
-                    style={{
-                        textDecoration: "none",
-                        color: "white",
-                        background: "blue",
-                        padding: "8px 15px",
-                        borderRadius: "5px",
-                    }}
+                    variant="contained"
+                    color="primary"
                 >
                     Home
-                </Link>
-            </div>
-            <h1>Login</h1>
+                </Button>
+            </Box>
+            <Typography variant="h4" component="h1" gutterBottom>
+                Login
+            </Typography>
             <form onSubmit={handleSubmit}>
-                <label>
-                    Username:
-                    <input
-                        type="text"
+                <Box sx={{ mb: 2 }}>
+                    <TextField
+                        label="Username"
+                        variant="outlined"
+                        fullWidth
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                     />
-                </label>
-                <label>
-                    Password:
-                    <input
+                </Box>
+                <Box sx={{ mb: 2 }}>
+                    <TextField
+                        label="Password"
                         type="password"
+                        variant="outlined"
+                        fullWidth
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                </label>
-                <input type="submit" value="Login" />
+                </Box>
+                <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                >
+                    Login
+                </Button>
             </form>
-        </div>
+        </Container>
     );
 };
 
