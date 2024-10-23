@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../context/UserContext";
+import Header from "./Header";
+import { Container, Typography, Box, CircularProgress } from "@mui/material";
 
 interface Movie {
     title: string;
@@ -11,7 +13,7 @@ interface Movie {
 const MoviePlayer: React.FC = () => {
     const { title = "" } = useParams<{ title: string }>(); // Get movie title
     const [movie, setMovie] = useState<Movie | null>(null);
-    const { userId } = useContext(UserContext);
+    const { userId, username } = useContext(UserContext);
     const videoRef = useRef<HTMLVideoElement>(null);
 
     const [progress, setProgress] = useState(0);
@@ -110,23 +112,43 @@ const MoviePlayer: React.FC = () => {
         }
     };
 
-    if (!movie) return <div>Loading...</div>;
-
+    if (!movie)
+        return (
+            <Container>
+                <Header /> {/* Add Header component */}
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+                    <CircularProgress />
+                </Box>
+            </Container>
+        );
     return (
-        <div>
-            {userId && <span>Welcome, {userId}!</span>}
-            <Link to="/">Home</Link>
-            <h1>{movie.title}</h1>
-            <video
-                width="100%"
-                controls
-                ref={videoRef}
-                src={movie?.path}
-                onLoadedMetadata={handleLoadedMetadata}
-            >
-                Your browser does not support the video tag.
-            </video>
-        </div>
+        <Container>
+            <Header />
+            <Box sx={{ my: 4 }}>
+                <Typography variant="h4" component="h1" gutterBottom>
+                    {movie.title}
+                </Typography>
+                {userId && (
+                    <Box>
+                        <Typography variant="body1">
+                            Your User ID {userId}!
+                        </Typography>
+                        <Typography variant="body1">
+                            Your username: {username}
+                        </Typography>
+                    </Box>
+                )}
+                <video
+                    width="100%"
+                    controls
+                    ref={videoRef}
+                    src={movie?.path}
+                    onLoadedMetadata={handleLoadedMetadata}
+                >
+                    Your browser does not support the video tag.
+                </video>
+            </Box>
+        </Container>
     );
 };
 

@@ -56,7 +56,7 @@ const MoviesList: React.FC = () => {
                 {userId && (
                     <Box>
                         <Typography variant="body1">
-                            Welcome, {userId}!
+                            Your User ID {userId}!
                         </Typography>
                         <Typography variant="body1">
                             Your username: {username}
