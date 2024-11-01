@@ -1,6 +1,8 @@
 package com.example.tombyts.ui
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -32,32 +34,21 @@ class MainActivity : ComponentActivity() {
                         val token = backStackEntry.arguments?.getString("token") ?: ""
                         MovieListScreen(token, navController)
                     }
-//                    composable(
-//                        "moviePlayer/{movieTitle}",
-//                        arguments = listOf(navArgument("movieTitle") { type = NavType.StringType },
-//                            navArgument("token") { type = NavType.StringType })
-//                    ) { backStackEntry ->
-//                        val encodedMovieTitle =
-//                            backStackEntry.arguments?.getString("movieTitle") ?: ""
-//                        val movieTitle = backStackEntry.arguments?.getString("movieTitle") ?: ""
-//                        val token = backStackEntry.arguments?.getString("token") ?: ""
-//                        MoviePlayerScreen(
-//                            encodedMovieTitle,
-//                            token
-//                        ) // Assuming you pass the token here
-//                    }
                     composable(
                         "moviePlayer/{movieTitle}/{token}",
                         arguments = listOf(
                             navArgument("movieTitle") { type = NavType.StringType },
-                            navArgument("token") { type = NavType.StringType })
+                            navArgument("token") { type = NavType.StringType }
+                        )
                     ) { backStackEntry ->
                         val movieTitle = backStackEntry.arguments?.getString("movieTitle") ?: ""
                         val token = backStackEntry.arguments?.getString("token") ?: ""
-                        MoviePlayerScreen(
-                            movieTitle,
-                            token
-                        ) // Assuming you pass the token here
+
+                        // Start MoviePlayerActivity
+                        val intent = Intent(this@MainActivity, MoviePlayerActivity::class.java)
+                        intent.putExtra("movieTitle", movieTitle) // Pass movie path
+                        intent.putExtra("token", token) // Pass token
+                        startActivity(intent)
                     }
                 }
             }

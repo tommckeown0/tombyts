@@ -21,9 +21,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
 @Composable
@@ -42,17 +39,10 @@ fun MovieListScreen(token: String, navController: NavController) {
             var movies by remember { mutableStateOf<List<Movie>>(emptyList()) }
             var isLoading by remember { mutableStateOf(true) }
             var error by remember { mutableStateOf<String?>(null) }
-            val apiService = remember { // Create ApiService instance
-                Retrofit.Builder()
-                    .baseUrl("https://10.0.2.2:3001/") // Replace with your backend URL
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
-                    .create(ApiService::class.java)
-            }
 
             LaunchedEffect(Unit) {
                 try {
-                    val response = apiService.getMovies("Bearer $token") // Include token in headers
+                    val response = Classes.ApiProvider.apiService.getMovies("Bearer $token")
                     if (response.isSuccessful) {
                         movies = response.body() ?: emptyList()
                     } else {
@@ -72,12 +62,6 @@ fun MovieListScreen(token: String, navController: NavController) {
             } else {
                 LazyColumn {
                     items(movies) { movie ->
-//                        TextButton(onClick = {
-//                            val encodedTitle = Uri.encode(movie.title)
-//                            navController.navigate("moviePlayer/${encodedTitle}/${token}")
-//                        }) {
-//                            Text(text = movie.title)
-//                        }
                         TextButton(onClick = {
                             val encodedTitle = Uri.encode(movie.title)
                             navController.navigate("moviePlayer/${encodedTitle}/${token}")
@@ -89,5 +73,4 @@ fun MovieListScreen(token: String, navController: NavController) {
             }
         }
     }
-    // ... (Display movies or loading/error state)
 }
