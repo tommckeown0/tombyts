@@ -12,6 +12,18 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const isWindows = process.platform === "win32";
+
+let keyPath: string;
+let certPath: string;
+
+if (isWindows) {
+	keyPath = "C:\\Users\\tommc\\Documents\\certs\\key.pem";
+	certPath = "C:\\Users\\tommc\\Documents\\certs\\cert.pem";
+} else {
+	keyPath = "/app/certs/key.pem";
+	certPath = "/app/certs/cert.pem";
+}
 
 app.use(cors());
 
@@ -25,18 +37,18 @@ app.use("/media", express.static("C:\\Users\\tommc\\Documents\\Torrents"));
 app.use("/progress", progressRoutes);
 
 app.get("/", (req, res) => {
-    res.json("Hello from TypeScript and Express!");
+	res.json("Hello from TypeScript and Express!");
 });
 
 app.use("/auth", loginRoutes);
 
 const options = {
-    key: fs.readFileSync("C:\\Users\\tommc\\Documents\\certs\\key.pem"),
-    cert: fs.readFileSync("C:\\Users\\tommc\\Documents\\certs\\cert.pem"),
+	key: fs.readFileSync(keyPath),
+	cert: fs.readFileSync(certPath),
 };
 
 https.createServer(options, app).listen(PORT, () => {
-    console.log(`Server running on https://localhost:${PORT}`);
+	console.log(`Server running on https://localhost:${PORT}`);
 });
 
 // app.listen(PORT, () => {

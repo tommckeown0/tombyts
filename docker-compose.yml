@@ -1,0 +1,16 @@
+services:
+    backend:
+        build:
+            context: ./backend # Path to backend Dockerfile
+        ports:
+            - "3001:3001" # Map host port 5000 to container port 5000
+        volumes:
+            - C:/Users/tommc/Documents/certs:/app/certs # Map certs directory to /app in container
+        environment:
+            - MONGO_URI=mongodb+srv://tommckeown909:w9vqHEVRvZiw9uzv@cluster0.tmdhpam.mongodb.net/db1 # replace with actual MongoDB URL
+
+    frontend:
+        build:
+            context: ./frontend # Path to frontend Dockerfile
+        ports:
+            - "3000:80" # Map host port 3000 to container port 80
